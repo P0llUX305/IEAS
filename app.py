@@ -6,67 +6,11 @@ from google import genai
 # --- Page Configuration ---
 st.set_page_config(page_title="БББЖ (IEAS) Прототипі", layout="wide", initial_sidebar_state="expanded")
 
-# --- Fake Data Generation ---
-# We simulate a student's performance dropping over 10 weeks
-weeks = [f"{i}-апта" for i in range(1, 11)]
-pass_probability = [95, 92, 88, 85, 80, 75, 60, 50, 42, 35]  # Notice the sharp drop
-data = pd.DataFrame({
-    "Апта": weeks,
-    "Өту ықтималдығы (%)": pass_probability
-})
-
-# --- Sidebar: Student Profile (The "Platonus" Replacement) ---
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=100)  # Generic profile icon
-    st.header("Студент профилі")
-    st.write("**Аты-жөні:** Әліхан Нұрмаханов")
-    st.write("**ID:** 2026-CS-042")
-    st.write("**Мамандық:** Компьютерлік ғылымдар (Computer Science)")
-    st.write("**Ағымдағы курс:** Жетілдірілген алгоритмдер")
-
 # --- Tabs for App Navigation ---
-tab1, tab2, tab3 = st.tabs(["📊 Басқару тақтасы", "🧠 Адаптивті тест", "📝 ЖИ (AI) эссе бағалаушы"])
-
-with tab1:
-    # --- Main Dashboard ---
-    st.title("🎓 Білім берудегі бағалаудың білікті жүйесі (БББЖ/IEAS)")
-    st.markdown("*Жаңа буын болжамдық талдау басқару тақтасы (Прототип)*")
-
-    # Top Level Metrics
-    col1, col2, col3 = st.columns(3)
-    col1.metric(label="Ағымдағы курс бағасы", value="68%", delta="-12%", delta_color="inverse")
-    col2.metric(label="Белсенділік көрсеткіші", value="Төмен", delta="Назар аудару қажет", delta_color="inverse")
-    col3.metric(label="Болжамды қорытынды нәтиже", value="Сәтсіздік қаупі", delta="Жоғары дабыл", delta_color="inverse")
-
-    st.divider()
-
-    # Predictive Chart
-    st.subheader("📈 Болжамдық траектория: Өту ықтималдығы")
-    st.markdown(
-        "Тек өткен бағаларды көрсететін дәстүрлі жүйелерден айырмашылығы, БББЖ (IEAS) терең білімді бақылау (Deep Knowledge Tracing) арқылы болашақ нәтижелерді болжайды.")
-    st.line_chart(data.set_index("Апта"))
-
-    # Autonomous Intervention Alert
-    st.subheader("⚠️ ЖИ (AI) автономды араласуы")
-    # Using a warning box to simulate an alert popping up for the professor
-    st.warning(
-        "**ШҰҒЫЛ ЕСКЕРТУ:** Әліханның өту ықтималдығы 40% шегінен төмен түсті. Когнитивті қозғалтқыш 'Динамикалық бағдарламалау' (Dynamic Programming) тақырыбындағы түбегейлі түсінбеушілікті анықтады.")
-
-    # Explainability Section (Crucial for the AI Ethics/2026 Law point!)
-    with st.expander("🔍 ЖИ (AI) шешім логикасын көру (Түсіндірмелілік деңгейі)"):
-        st.markdown("""
-        **ЖИ (AI) неге бұл студентті белгіледі?**
-        * **1:** Динамикалық бағдарламалау бойынша соңғы екі тесттен өте алмады.
-        * **2:** БҚЖ (LMS) материалдарын оқу уақыты соңғы 3 аптада 65%-ға төмендеді.
-        * **Педагогикалық әрекет:** Жүйе Әліханға 'Мемоизация' тақырыбы бойынша жекелендірілген негізгі модульді автоматты түрде жіберіп, оқытушы ассистентке хабарлады.
-        """)
-
-        if st.button("ЖИ (AI) араласу жоспарын мақұлдау"):
-            st.success("Араласу жоспары мақұлданды!")
-            st.balloons()
+tab2, tab3 = st.tabs(["🧠 Адаптивті тест", "📝 ЖИ (AI) эссе бағалаушы"])
 
 with tab2:
-    st.header("🧠 Үздіксіз ТЖТ (IRT) бағалау жүйесі (Математика демо)")
+    st.header("🧠 ТЖТ (IRT) бағалау жүйесі (Математика демо)")
     st.markdown(
         "Бұл модуль нағыз тапсырмаға жауап беру теориясын (IRT) қолданады. Ол студенттің қабілетін 1-100 шкаласы бойынша үздіксіз бағалайды, олардың дәл когнитивті шегіне сәйкес сұрақтарды алгоритмдік түрде таңдайды.")
 
@@ -304,8 +248,8 @@ with tab2:
             st.rerun()
 
 with tab3:
-    st.header("📝 Мөлдір ЖИ (AI) эссе бағалаушы")
-    st.markdown("Этикалық ЖИ (AI) стандарттарына сәйкестікті көрсету. Бұл модуль жазбаша жауаптарды бағалау үшін табиғи тілді өңдеуді (Natural Language Processing) қолданады, сонымен қатар толық мөлдір, тексерілетін шешім матрицасын ұсынады.")
+    st.header("📝 ЖИ (AI) эссе бағалаушы")
+    st.markdown("Этикалық ЖИ (AI) стандарттарына сәйкестікті көрсету. Бұл модуль жазбаша жауаптарды бағалау үшін табиғи тілді өңдеуді (Natural Language Processing) қолданады, сонымен қатар тексерілетін шешім матрицасын ұсынады.")
 
     # --- API Key Input ---
     api_key = st.secrets["api_key"]
