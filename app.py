@@ -239,14 +239,6 @@ with tab2:
             st.error(
                 "Студенттің математикалық негізгі дағдылары жеткіліксіз. Негізгі арифметика/алгебра бойынша ЖИ (AI) тьютор араласуы іске қосылды.")
 
-        if st.button("Бағалауды қайта бастау"):
-            st.session_state.quiz_step = 1
-            st.session_state.ability_score = 50.0
-            st.session_state.asked_questions = []
-            st.session_state.quiz_complete = False
-            st.session_state.current_q_data = None
-            st.rerun()
-
 with tab3:
     st.header("📝 ЖИ (AI) эссе бағалаушы")
     st.markdown("Этикалық ЖИ (AI) стандарттарына сәйкестікті көрсету. Бұл модуль жазбаша жауаптарды бағалау үшін табиғи тілді өңдеуді (Natural Language Processing) қолданады, сонымен қатар тексерілетін шешім матрицасын ұсынады.")
@@ -265,55 +257,57 @@ with tab3:
         height=200,
         placeholder="Кез келген эссені осында жазыңыз немесе қойыңыз. ЖИ (AI) оны компьютерлік ғылымдар принциптері бойынша динамикалық түрде бағалайды..."
     )
-
-    if st.button("Бағалау және мөлдір кері байланыс жасау"):
+    is_checked = False
+    if st.button("Бағалау"):
         if essay_input.strip() == "":
             st.warning("Бағалау үшін эссе енгізіңіз.")
         else:
-            with st.spinner("Семантикалық талдау жүргізілуде..."):
-                try:
-                    # Initialize the modern genai client
-                    client = genai.Client(api_key=api_key)
+            if not is_checked:
+                is_checked = True
+                with st.spinner("Семантикалық талдау жүргізілуде..."):
+                    try:
+                        # Initialize the modern genai client
+                        client = genai.Client(api_key=api_key)
 
-                    # --- The Prompt Engineering (The Secret Sauce) ---
-                    full_prompt = f"""
-                    Сіз 'Білім берудегі бағалаудың білікті жүйесі' (БББЖ/IEAS) жүйесісіз.
-                    Төмендегі компьютерлік ғылымдар эссесін 100 ұпай бойынша бағалаңыз.
-                    Жауабыңызды МІНДЕТТІ ТҮРДЕ қазақ тілінде және дәл осы форматта беріңіз, мөлдір түсіндірмелілік қамтамасыз етіңіз. Кіріспе сөздер жазбаңыз, тек матрицаны шығарыңыз.
+                        # --- The Prompt Engineering (The Secret Sauce) ---
+                        full_prompt = f"""
+                        Сіз 'Білім берудегі бағалаудың білікті жүйесі' (БББЖ/IEAS) жүйесісіз.
+                        Төмендегі компьютерлік ғылымдар эссесін 100 ұпай бойынша бағалаңыз.
+                        Жауабыңызды МІНДЕТТІ ТҮРДЕ қазақ тілінде және дәл осы форматта беріңіз, мөлдір түсіндірмелілік қамтамасыз етіңіз. Кіріспе сөздер жазбаңыз, тек матрицаны шығарыңыз.
+    
+                        **Жалпы баға:** [Ұпай]/100
+    
+                        **1. Тұжырымдаманы меңгеру (40 ұпай)**
+                        * ЖИ (AI) ескертпесі: [Студенттің түсінігін қысқаша талдау]
+                        * Ұпай: [X]/40
+    
+                        **2. Техникалық дәлдік (30 ұпай)**
+                        * ЖИ (AI) ескертпесі: [Техникалық тұжырымдары мен күрделіліктерін қысқаша талдау]
+                        * Ұпай: [X]/30
+    
+                        **3. Синтаксис және құрылым (30 ұпай)**
+                        * ЖИ (AI) ескертпесі: [Жазу сапасын қысқаша талдау]
+                        * Ұпай: [X]/30
+    
+                        **Педагогикалық ұсыныс:** [Студенттің ең әлсіз бөліміне негізделген, келесі не оқу керек екендігі туралы бір сөйлем].
+    
+                        ---
+                        **БАҒАЛАУҒА АРНАЛҒАН СТУДЕНТ ЭССЕСІ:**
+                        {essay_input}
+                        """
 
-                    **Жалпы баға:** [Ұпай]/100
+                        # Call the live API using the new method
+                        response = client.models.generate_content(
+                            model='gemini-3-flash-preview',  # Using the cutting-edge fast model
+                            contents=full_prompt
+                        )
 
-                    **1. Тұжырымдаманы меңгеру (40 ұпай)**
-                    * ЖИ (AI) ескертпесі: [Студенттің түсінігін қысқаша талдау]
-                    * Ұпай: [X]/40
+                        st.success("✅ Тікелей талдау аяқталды!")
+                        st.divider()
 
-                    **2. Техникалық дәлдік (30 ұпай)**
-                    * ЖИ (AI) ескертпесі: [Техникалық тұжырымдары мен күрделіліктерін қысқаша талдау]
-                    * Ұпай: [X]/30
+                        # Display the genuine, dynamically generated response
+                        st.markdown("### 🔍 ЖИ (AI) шешімінің талдамасы (Түсіндірмелілік деңгейі)")
+                        st.markdown(response.text)
 
-                    **3. Синтаксис және құрылым (30 ұпай)**
-                    * ЖИ (AI) ескертпесі: [Жазу сапасын қысқаша талдау]
-                    * Ұпай: [X]/30
-
-                    **Педагогикалық ұсыныс:** [Студенттің ең әлсіз бөліміне негізделген, келесі не оқу керек екендігі туралы бір сөйлем].
-
-                    ---
-                    **БАҒАЛАУҒА АРНАЛҒАН СТУДЕНТ ЭССЕСІ:**
-                    {essay_input}
-                    """
-
-                    # Call the live API using the new method
-                    response = client.models.generate_content(
-                        model='gemini-3-flash-preview',  # Using the cutting-edge fast model
-                        contents=full_prompt
-                    )
-
-                    st.success("✅ Тікелей талдау аяқталды!")
-                    st.divider()
-
-                    # Display the genuine, dynamically generated response
-                    st.markdown("### 🔍 ЖИ (AI) шешімінің талдамасы (Түсіндірмелілік деңгейі)")
-                    st.markdown(response.text)
-
-                except Exception as e:
-                    st.error(f"API байланыс қатесі")
+                    except Exception as e:
+                        st.error(f"API байланыс қатесі")
